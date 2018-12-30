@@ -2,8 +2,10 @@
 #define GUI_H
 
 #include <QGraphicsView>
+#include <QDebug>
 
 class Cat;
+class Consumer;
 
 class GUI
         :public QGraphicsView
@@ -14,7 +16,10 @@ public:
 
 public slots:
     void updateCatSem();
+public slots:
     void updateCat(Cat* cat);
+public slots:
+    void removeConsumer(Consumer* consumer);
 };
 
 #endif // GUI_H

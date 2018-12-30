@@ -12,18 +12,20 @@ public:
     Cat();
     bool getIsFree();
     void setIsFree(bool isFreeNow);
+    void setTid(pthread_t tid);
+    pthread_t getTid();
     void setConsumer(Consumer* consumer);
 
-    void* play();
+    void* Mew();
 
 signals:
-    void goToWork();
-    void goHome();
+    void goToWork(Cat* cat);
+    void goHome(Cat* cat);
 
 private:
     bool isFree;
     Consumer* consumer;
-
+    pthread_t tid;
 };
 
 #endif // CAT_H

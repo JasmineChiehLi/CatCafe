@@ -1,4 +1,4 @@
-#include "root.h"
+﻿#include "root.h"
 
 //Third-party view
 
@@ -10,20 +10,27 @@
 
 Root::Root()
 {
-    for(int i = 0; i < MAX_CAT_NUM; i++) {
-        cat[i] = new Cat();
 
-        QObject::connect(cat[i], SIGNAL(goToWork()), gui, SLOT(updateCat(cat[i])));
-
-        pthread_attr_init(&catAttr[i]);
-        pthread_create(&catTid[i], &catAttr[i], catThread, static_cast<void*>(cat[i]));
-    }
-
-    sem_init(cat_sem, 0, MAX_CAT_NUM);
 }
 
 Root::Root(GUI* gui) {
+    for(int i = 0; i < MAX_CAT_NUM; i++) {
+        cat[i] = new Cat();
+
+        pthread_attr_init(&catAttr[i]);
+
+        QObject::connect(cat[i], SIGNAL(goToWork(Cat*)), gui, SLOT(updateCat(Cat*)));
+        QObject::connect(cat[i], SIGNAL(goHome(Cat*)), gui, SLOT(updateCat(Cat*)));
+    }
+
+    for(int i = 0; i < MAX_CAT_NUM; i++) {
+        pthread_create(&catTid[i], &catAttr[i], catThread, static_cast<void*>(cat[i]));
+        cat[i]->setTid(static_cast<pthread_t>(i));
+    }
+
+    sem_init(&cat_sem, 0, MAX_CAT_NUM);
     this->gui = gui;
+    QObject::connect(this, SIGNAL(removeConsumer(Consumer*)), gui, SLOT(removeConsumer(Consumer*)));
 }
 
 Root::~Root() {
@@ -35,11 +42,13 @@ void* Root::genConsumer() {
 
     for(int i = 0; i < MAX_CON_NUM; i++) {
         consumer[i] = new Consumer();
-        QObject::connect(consumer[i], SIGNAL(wantCat()), this, SLOT(consumed(consumer[i])));
+        QObject::connect(consumer[i], SIGNAL(wantCat(Consumer*)), this, SLOT(consumed(Consumer*)));
+        QObject::connect(consumer[i], SIGNAL(finish(Consumer*)), this, SLOT(cated(Consumer*)));
 
         pthread_attr_init(&conAttr[i]);
         pthread_create(&conTid[i], &conAttr[i], consumerThread, static_cast<void*>(consumer[i]));
 
+        consumer[i]->setTid(static_cast<pthread_t>(i));
         emit newConsumer();
 
         //Sleep
@@ -56,16 +65,27 @@ void Root::consumed(Consumer* consumer) {
     }
 }
 
+void Root::cated(Consumer* consumer) {
+    emit removeConsumer(consumer);
+    catFree(consumer->getCat());
+
+    delete consumer;
+    consumer = nullptr;
+
+}
+
 void Root::catConsumer(Consumer* consumer) {
     //distribute cat
-    sem_wait(cat_sem);
+    sem_wait(&cat_sem);
     emit catSemChange();
 
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         if(cat[i]->getIsFree()) {
             cat[i]->setIsFree(false);
             cat[i]->setConsumer(consumer);
+            cat[i]->setIsFree(false);
             consumer->setCat(cat[i]);
+            break;
         }
     }
 
@@ -80,10 +100,11 @@ void* Root::consumerGenThread(void *param) {
 }
 
 void* Root::catThread(void* param) {
-    return static_cast<Cat*>(param)->play();
+    return static_cast<Cat*>(param)->Mew();
 }
 
-void Root::catFree() {
-    sem_post(cat_sem);
+void Root::catFree(Cat* cat) {
+    cat->setConsumer(nullptr);
+    sem_post(&cat_sem);
     emit catSemChange();
 }

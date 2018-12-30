@@ -16,8 +16,8 @@
 #define MAX_CON_NUM 128
 #define MAX_CAT_NUM 6
 
-#define MIN_CON_GAP 7
-#define CON_VAR 6
+#define MIN_CON_GAP 1
+#define CON_VAR 2
 
 
 class Root
@@ -42,12 +42,21 @@ public:
 
 signals:
     void newConsumer();
+
+signals:
     void catSemChange();
     //use see_getvalue() to update ui
+signals:
+    void removeConsumer(Consumer* consumer);
 
 public slots:
     void consumed(Consumer* consumer);
-    void catFree();
+
+public slots:
+    void catFree(Cat* cat);
+
+public slots:
+    void cated(Consumer* consumer);
 
 
 private:
@@ -55,7 +64,7 @@ private:
     Consumer* consumer[MAX_CON_NUM];
     Cat* cat[MAX_CAT_NUM];
 
-    sem_t* cat_sem;
+    sem_t cat_sem;
 
     pthread_t conTid[MAX_CON_NUM];
     pthread_attr_t conAttr[MAX_CON_NUM];

@@ -1,12 +1,14 @@
 #include "widget.h"
 #include <QApplication>
 #include "root.h"
+#include "gui.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    Root* root = new Root();
+    GUI* gui = new GUI();
+    Root* root = new Root(gui);
 
     pthread_t tidGenCon;
     pthread_attr_t attrGenCon;

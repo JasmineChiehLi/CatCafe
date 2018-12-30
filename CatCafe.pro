@@ -29,13 +29,15 @@ SOURCES += \
     root.cpp \
     consumer.cpp \
     cat.cpp \
-    gui.cpp
+    gui.cpp \
+    employee.cpp
 
 HEADERS += \
     root.h \
     consumer.h \
     cat.h \
-    gui.h
+    gui.h \
+    employee.h
 
 FORMS += \
         widget.ui
