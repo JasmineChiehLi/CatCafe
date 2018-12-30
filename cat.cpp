@@ -25,6 +25,7 @@ void Cat::setConsumer(Consumer* consumer) {
 void* Cat::Mew() {
     while(true) {
         qDebug() <<"Cat "<< this->tid << ": I'm waiting for a consumer" << endl;
+        sleep(1);
         while (consumer == nullptr) {
             wait();
         }

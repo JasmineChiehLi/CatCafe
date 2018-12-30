@@ -2,6 +2,8 @@
 #define ROOT_H
 
 #include <QObject>
+#include <QQueue>
+
 #include "consumer.h"
 #include "cat.h"
 #include "gui.h"
@@ -71,6 +73,8 @@ private:
 
     pthread_t catTid[MAX_CAT_NUM];
     pthread_attr_t catAttr[MAX_CAT_NUM];
+
+    QQueue<Cat*> *freeCat;
 
 };
 

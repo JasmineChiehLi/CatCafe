@@ -14,6 +14,8 @@ Root::Root()
 }
 
 Root::Root(GUI* gui) {
+    freeCat = new QQueue<Cat*>();
+
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         cat[i] = new Cat();
 
@@ -21,6 +23,8 @@ Root::Root(GUI* gui) {
 
         QObject::connect(cat[i], SIGNAL(goToWork(Cat*)), gui, SLOT(updateCat(Cat*)));
         QObject::connect(cat[i], SIGNAL(goHome(Cat*)), gui, SLOT(updateCat(Cat*)));
+
+        freeCat->enqueue(cat[i]);
     }
 
     for(int i = 0; i < MAX_CAT_NUM; i++) {
@@ -56,7 +60,8 @@ void* Root::genConsumer() {
         unsigned int gap = rand() % CON_VAR + MIN_CON_GAP;
         sleep(gap);
     }
-    return nullptr;
+
+    pthread_exit(nullptr);
 }
 
 void Root::consumed(Consumer* consumer) {
@@ -79,15 +84,11 @@ void Root::catConsumer(Consumer* consumer) {
     sem_wait(&cat_sem);
     emit catSemChange();
 
-    for(int i = 0; i < MAX_CAT_NUM; i++) {
-        if(cat[i]->getIsFree()) {
-            cat[i]->setIsFree(false);
-            cat[i]->setConsumer(consumer);
-            cat[i]->setIsFree(false);
-            consumer->setCat(cat[i]);
-            break;
-        }
-    }
+    Cat* cat = freeCat->dequeue();
+    cat->setIsFree(false);
+    cat->setConsumer(consumer);
+    cat->setIsFree(false);
+    consumer->setCat(cat);
 
 }
 
@@ -105,6 +106,7 @@ void* Root::catThread(void* param) {
 
 void Root::catFree(Cat* cat) {
     cat->setConsumer(nullptr);
+    freeCat->enqueue(cat);
     sem_post(&cat_sem);
     emit catSemChange();
 }
