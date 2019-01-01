@@ -28,13 +28,13 @@ void* Cat::Mew() {
         qDebug() <<"Cat "<< this->tid << ": I'm waiting for a consumer" << endl;
         sleep(1);
         while (consumer == nullptr) {
-            wait();
+            wait(nullptr);
         }
         emit work(this);
         qDebug() <<"Cat "<< this->tid << " I'm going to work" <<endl;
 
         while (consumer != nullptr) {
-            wait();
+            wait(nullptr);
         }
         setIsFree(true);
         qDebug() <<"Cat "<< this->tid << " I'm free" <<endl;

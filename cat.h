@@ -2,6 +2,8 @@
 #define CAT_H
 
 #include <QObject>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 class Consumer;
 

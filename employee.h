@@ -8,6 +8,8 @@
 
 #include <unistd.h>
 #include <semaphore.h>
+#include <sys.types.h>
+#include <sys/wait.h>
 
 #include "consumer.h"
 

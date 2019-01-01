@@ -1,7 +1,7 @@
 #include "employee.h"
 
-Employee::Employee(){
-    consumer=nullptr;
+Employee::Employee() {
+    consumer = nullptr;
     sem_init(&empSem, 1, 1);
     //binary semaphore, mutex resouce
 }
@@ -32,7 +32,7 @@ void* Employee::serve(){
     qDebug()<<"employee begins to work";
     while(true){
         while(consumer == nullptr) {
-            wait();
+            wait(nullptr);
         }
         sem_wait(&empSem);
         i++;

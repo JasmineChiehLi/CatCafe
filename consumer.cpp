@@ -33,12 +33,12 @@ Cat* Consumer::getCat() {
 void* Consumer::consume() {
         queueUp(this);
         while(beingServed == false) {
-            wait();
+            wait(nullptr);
         }
         qDebug() << "comsumer buying";
 
         while(haveCafe == false) {
-            wait();
+            wait(nullptr);
         }
 
         emit waitCat(this);
@@ -47,7 +47,7 @@ void* Consumer::consume() {
 
 
         while(cat == nullptr) {
-            wait();
+            wait(nullptr);
         }
 
         emit cating(this, cat);
