@@ -2,10 +2,12 @@
 #define GUI_H
 
 #include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QBrush>
+#include <QImage>
 #include <QDebug>
 
-class Cat;
-class Consumer;
+#include "employee.h"
 
 class GUI
         :public QGraphicsView
@@ -15,11 +17,17 @@ public:
     GUI();
 
 public slots:
-    void updateCatSem();
-public slots:
-    void updateCat(Cat* cat);
-public slots:
     void removeConsumer(Consumer* consumer);
+
+    void enQueue(Consumer* consumer);
+    void waitCat(Consumer* consumer);
+    void cating(Consumer* consumer, Cat* cat);
+
+    void work(Cat* cat);
+    void home(Cat* cat);
+
+private:
+    QGraphicsScene* scene;
 };
 
 #endif // GUI_H

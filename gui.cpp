@@ -1,22 +1,36 @@
 #include "gui.h"
-#include "cat.h"
-#include "consumer.h"
+
 
 GUI::GUI()
 {
+    scene = new QGraphicsScene();
+    scene->setSceneRect(0, 0, 800, 600);
+    scene->setBackgroundBrush(QBrush(QImage("qrc:/img/Background.png")));
 
-}
-
-void GUI::updateCatSem() {
-
-}
-
-void GUI::updateCat(Cat* cat) {
-    qDebug() << "GUI: cat " << cat->getTid() << " is free? " << cat->getIsFree() <<endl;
+    qDebug() << "why?";
+    setScene(scene);
 }
 
 void GUI::removeConsumer(Consumer* consumer) {
     qDebug() << "GUI: consumer " << consumer->getTid() << " just left" <<endl;
 }
 
+void GUI::work(Cat* cat) {
 
+}
+
+void GUI::home(Cat* cat) {
+
+}
+
+void GUI::enQueue(Consumer* consumer) {
+
+}
+
+void GUI::waitCat(Consumer* consumer) {
+
+}
+
+void GUI::cating(Consumer* consumer, Cat* cat) {
+
+}

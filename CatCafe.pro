@@ -37,7 +37,7 @@ HEADERS += \
     consumer.h \
     cat.h \
     gui.h \
-    employee.h
+    employee.h \
 
 FORMS += \
         widget.ui
@@ -46,3 +46,10 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    img/Background.png \
+    img/Cat.png \
+    img/Consumer.png \
+    img/Employee.png \
+    img/效果图.png

@@ -40,6 +40,8 @@ void* Consumer::consume() {
         while(haveCafe == false) {
             wait();
         }
+
+        emit waitCat(this);
         emit wantCat(this);
         qDebug() << "Consumer "<< this->tid <<": I want a cat!" << endl;
 
@@ -47,6 +49,8 @@ void* Consumer::consume() {
         while(cat == nullptr) {
             wait();
         }
+
+        emit cating(this, cat);
         qDebug() <<"Consumer "<< this->tid <<": I got a cat!" << endl;
         sleep(static_cast<unsigned int>(catTime));
 

@@ -9,10 +9,11 @@
 #include <unistd.h>
 #include <semaphore.h>
 
+#include "consumer.h"
+
+
 #define SERVE_GAP 3
 #define SERVE_VAR 2
-
-class Consumer;
 
 class Employee
         : public QObject

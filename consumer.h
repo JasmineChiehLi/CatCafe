@@ -7,10 +7,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "cat.h"
+
 #define CAT_GAP 7
 #define CAT_VAR 5
 
-class Cat;
+
 //pre-declaration
 
 class Consumer
@@ -35,6 +37,10 @@ signals:
     void wantCat(Consumer* consumer);
     void bye(Consumer* consumer);
     //delete
+
+    //gui-concerned signals
+    void waitCat(Consumer* consumer);
+    void cating(Consumer* consumer, Cat* cat);
 
 private:
     bool haveCafe;

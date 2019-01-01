@@ -1,4 +1,5 @@
 #include "cat.h"
+#include "consumer.h"
 
 Cat::Cat()
 {
@@ -29,7 +30,7 @@ void* Cat::Mew() {
         while (consumer == nullptr) {
             wait();
         }
-        emit goToWork(this);
+        emit work(this);
         qDebug() <<"Cat "<< this->tid << " I'm going to work" <<endl;
 
         while (consumer != nullptr) {
@@ -38,7 +39,7 @@ void* Cat::Mew() {
         setIsFree(true);
         qDebug() <<"Cat "<< this->tid << " I'm free" <<endl;
 
-        emit goHome(this);
+        emit home(this);
         qDebug() <<"Cat "<< this->tid << " I'm home" <<endl;
     }
 }

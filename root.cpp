@@ -1,6 +1,4 @@
 ﻿#include "root.h"
-#include "gui.h"
-#include "employee.h"
 
 //Third-party view
 
@@ -20,13 +18,18 @@ Root::Root(GUI* gui, Employee* employee) {
     freeCat = new QQueue<Cat*>();
     wConsumer = new QQueue<Consumer*>();
 
+    this->gui = gui;
+    this->employee = employee;
+    QObject::connect(this, SIGNAL(removeConsumer(Consumer*)), gui, SLOT(removeConsumer(Consumer*)));
+    QObject::connect(this, SIGNAL(enQueue(Consumer*)), gui, SLOT(enQueue(Consumer*)));
+
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         cat[i] = new Cat();
 
         pthread_attr_init(&catAttr[i]);
 
-        QObject::connect(cat[i], SIGNAL(goToWork(Cat*)), gui, SLOT(updateCat(Cat*)));
-        QObject::connect(cat[i], SIGNAL(goHome(Cat*)), gui, SLOT(updateCat(Cat*)));
+        QObject::connect(cat[i], SIGNAL(goToWork(Cat*)), gui, SLOT(work(Cat*)));
+        QObject::connect(cat[i], SIGNAL(goHome(Cat*)), gui, SLOT(home(Cat*)));
 
         freeCat->enqueue(cat[i]);
     }
@@ -37,9 +40,6 @@ Root::Root(GUI* gui, Employee* employee) {
     }
 
     sem_init(&cat_sem, 0, MAX_CAT_NUM);
-    this->gui = gui;
-    this->employee = employee;
-    QObject::connect(this, SIGNAL(removeConsumer(Consumer*)), gui, SLOT(removeConsumer(Consumer*)));
 }
 
 Root::~Root() {
@@ -55,6 +55,8 @@ void* Root::genConsumer() {
         QObject::connect(consumer[i], SIGNAL(wantCat(Consumer*)), this, SLOT(consumed(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(bye(Consumer*)), this, SLOT(cated(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(queueUp(Consumer*)), this, SLOT(queueCon(Consumer*)));
+        QObject::connect(consumer[i], SIGNAL(waitCat(Consumer*)), gui, SLOT(waitCat(Consumer*)));
+        QObject::connect(consumer[i], SIGNAL(cating(Consumer*, Cat*)), gui, SLOT(cating(Consumer*, Cat*)));
 
         pthread_attr_init(&conAttr[i]);
         pthread_create(&conTid[i], &conAttr[i], consumerThread, static_cast<void*>(consumer[i]));
@@ -136,5 +138,6 @@ void Root::catFree(Cat* cat) {
 
 void Root::queueCon(Consumer* consumer) {
     wConsumer->enqueue(consumer);
+    emit enQueue(consumer);
     qDebug() << "consumer " << consumer->getTid() <<"in queue"<<endl;
 }

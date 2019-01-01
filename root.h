@@ -4,9 +4,6 @@
 #include <QObject>
 #include <QQueue>
 
-#include "consumer.h"
-#include "cat.h"
-
 #include <pthread.h>
 #include <unistd.h>
 #include <semaphore.h>
@@ -14,14 +11,14 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include "gui.h"
+#include "employee.h"
+
 #define MAX_CON_NUM 128
 #define MAX_CAT_NUM 6
 
 #define MIN_CON_GAP 2
 #define CON_VAR 2
-
-class GUI;
-class Employee;
 
 class Root
         :public QObject
@@ -51,6 +48,10 @@ signals:
     void catSemChange();
     //use see_getvalue() to update ui
     void removeConsumer(Consumer* consumer);
+
+    //gui-concerned signals
+    void enQueue(Consumer* consumer);
+
 
 public slots:
     void consumed(Consumer* consumer);

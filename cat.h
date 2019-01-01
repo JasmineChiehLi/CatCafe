@@ -2,7 +2,8 @@
 #define CAT_H
 
 #include <QObject>
-#include "consumer.h"
+
+class Consumer;
 
 class Cat
         :public QObject
@@ -19,8 +20,9 @@ public:
     void* Mew();
 
 signals:
-    void goToWork(Cat* cat);
-    void goHome(Cat* cat);
+    //gui-concerned signals
+    void work(Cat* cat);
+    void home(Cat* cat);
 
 private:
     bool isFree;
