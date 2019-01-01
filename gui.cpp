@@ -5,7 +5,7 @@ GUI::GUI()
 {
     scene = new QGraphicsScene();
     scene->setSceneRect(0, 0, 800, 600);
-    scene->setBackgroundBrush(QBrush(QImage("qrc:/img/Background.png")));
+    scene->setBackgroundBrush(QBrush(QImage("/home/li/CatCafe/img/Background.png")));
 
     qDebug() << "why?";
     setScene(scene);
