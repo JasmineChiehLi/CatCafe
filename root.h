@@ -6,7 +6,6 @@
 
 #include "consumer.h"
 #include "cat.h"
-#include "gui.h"
 
 #include <pthread.h>
 #include <unistd.h>
@@ -18,9 +17,11 @@
 #define MAX_CON_NUM 128
 #define MAX_CAT_NUM 6
 
-#define MIN_CON_GAP 1
+#define MIN_CON_GAP 2
 #define CON_VAR 2
 
+class GUI;
+class Employee;
 
 class Root
         :public QObject
@@ -28,41 +29,39 @@ class Root
        Q_OBJECT
 public:
     Root();
-    Root(GUI* gui);
+    Root(GUI* gui, Employee* employee);
     ~Root();
     void* genConsumer();
     //randomly generate consumers - thread function
-
     static void* consumerThread(void* param);
     static void* catThread(void* param);
     static void* consumerGenThread(void* param);
+    static void* monitor(void* param);
 
     void catConsumer(Consumer* consumer);
     //distribute cat - operation function
+    void* consumerEmp();
+    //keep record of whether the employee is available
+    //and whether there are waiting consumers
 
     void* run();
 
 signals:
     void newConsumer();
-
-signals:
     void catSemChange();
     //use see_getvalue() to update ui
-signals:
     void removeConsumer(Consumer* consumer);
 
 public slots:
     void consumed(Consumer* consumer);
-
-public slots:
     void catFree(Cat* cat);
-
-public slots:
     void cated(Consumer* consumer);
+    void queueCon(Consumer* consumer);
 
 
 private:
     GUI* gui;
+    Employee* employee;
     Consumer* consumer[MAX_CON_NUM];
     Cat* cat[MAX_CAT_NUM];
 
@@ -75,6 +74,8 @@ private:
     pthread_attr_t catAttr[MAX_CAT_NUM];
 
     QQueue<Cat*> *freeCat;
+    QQueue<Consumer*> *wConsumer;
+    //consumer in queue
 
 };
 

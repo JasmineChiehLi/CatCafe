@@ -32,8 +32,9 @@ void* Cat::Mew() {
         emit goToWork(this);
         qDebug() <<"Cat "<< this->tid << " I'm going to work" <<endl;
 
-        sleep(3);
-
+        while (consumer != nullptr) {
+            wait();
+        }
         setIsFree(true);
         qDebug() <<"Cat "<< this->tid << " I'm free" <<endl;
 

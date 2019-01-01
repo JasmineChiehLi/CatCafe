@@ -1,4 +1,6 @@
 ﻿#include "root.h"
+#include "gui.h"
+#include "employee.h"
 
 //Third-party view
 
@@ -10,11 +12,13 @@
 
 Root::Root()
 {
-
+    gui = nullptr;
+    employee = nullptr;
 }
 
-Root::Root(GUI* gui) {
+Root::Root(GUI* gui, Employee* employee) {
     freeCat = new QQueue<Cat*>();
+    wConsumer = new QQueue<Consumer*>();
 
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         cat[i] = new Cat();
@@ -34,6 +38,7 @@ Root::Root(GUI* gui) {
 
     sem_init(&cat_sem, 0, MAX_CAT_NUM);
     this->gui = gui;
+    this->employee = employee;
     QObject::connect(this, SIGNAL(removeConsumer(Consumer*)), gui, SLOT(removeConsumer(Consumer*)));
 }
 
@@ -43,11 +48,13 @@ Root::~Root() {
 
 void* Root::genConsumer() {
     //randomly generate new consumer
+    srand(static_cast<unsigned>(time(nullptr)));
 
     for(int i = 0; i < MAX_CON_NUM; i++) {
         consumer[i] = new Consumer();
         QObject::connect(consumer[i], SIGNAL(wantCat(Consumer*)), this, SLOT(consumed(Consumer*)));
-        QObject::connect(consumer[i], SIGNAL(finish(Consumer*)), this, SLOT(cated(Consumer*)));
+        QObject::connect(consumer[i], SIGNAL(bye(Consumer*)), this, SLOT(cated(Consumer*)));
+        QObject::connect(consumer[i], SIGNAL(queueUp(Consumer*)), this, SLOT(queueCon(Consumer*)));
 
         pthread_attr_init(&conAttr[i]);
         pthread_create(&conTid[i], &conAttr[i], consumerThread, static_cast<void*>(consumer[i]));
@@ -56,7 +63,6 @@ void* Root::genConsumer() {
         emit newConsumer();
 
         //Sleep
-        srand(static_cast<unsigned>(time(nullptr)));
         unsigned int gap = rand() % CON_VAR + MIN_CON_GAP;
         sleep(gap);
     }
@@ -75,8 +81,6 @@ void Root::cated(Consumer* consumer) {
     catFree(consumer->getCat());
 
     delete consumer;
-    consumer = nullptr;
-
 }
 
 void Root::catConsumer(Consumer* consumer) {
@@ -92,6 +96,21 @@ void Root::catConsumer(Consumer* consumer) {
 
 }
 
+void* Root::consumerEmp() {
+    while(true) {
+        sem_wait(&(employee->empSem));
+        //when emplyee is available
+
+        if(!wConsumer->empty()) {
+            Consumer* consumer = wConsumer->dequeue();
+            employee->setConsumer(consumer);
+            consumer -> setBeingServed(true);
+        }
+
+        sem_post(&(employee->empSem));
+    }
+}
+
 void* Root::consumerThread(void* param) {
     return static_cast<Consumer*>(param)->consume();
 }
@@ -104,9 +123,18 @@ void* Root::catThread(void* param) {
     return static_cast<Cat*>(param)->Mew();
 }
 
+void* Root::monitor(void* param) {
+    return static_cast<Root*>(param)->consumerEmp();
+}
+
 void Root::catFree(Cat* cat) {
     cat->setConsumer(nullptr);
     freeCat->enqueue(cat);
     sem_post(&cat_sem);
     emit catSemChange();
+}
+
+void Root::queueCon(Consumer* consumer) {
+    wConsumer->enqueue(consumer);
+    qDebug() << "consumer " << consumer->getTid() <<"in queue"<<endl;
 }
