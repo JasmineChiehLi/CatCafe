@@ -7,8 +7,18 @@ GUI::GUI()
     scene->setSceneRect(0, 0, 800, 600);
     scene->setBackgroundBrush(QBrush(QImage("/home/li/CatCafe/img/Background.png")));
 
+    emp = new QGraphicsPixmapItem(QPixmap("/home/li/CatCafe/img/Employee.png"));
+    emp->setPos(180,0);
+    emp->setScale(0.85);
+    scene->addItem(emp);
+
+    enjoy=new QGraphicsPixmapItem();
+    enjoy->setPixmap(QPixmap("/home/li/CatCafe/img/Enjoy.png"));
+    enjoy->setPos(-10,0);
+    enjoy->setScale(1);
+    scene->addItem(enjoy);
+
     wConsumer = new QQueue<Consumer*>();
-    //    pic = {QPixmap("/home/li/CatCafe/img/Consumer.png"), "/home/li/CatCafe/img/Employee.png", "/home/li/CatCafe/img/Cat.png"};
     pic[0] = new QPixmap("/home/li/CatCafe/img/Consumer.png");
     pic[1] = new QPixmap("/home/li/CatCafe/img/Cat.png");
     pic[2] = new QPixmap("/home/li/CatCafe/img/Employee.png");
@@ -64,5 +74,24 @@ void GUI::deQueue(Consumer* consumer, QQueue<Consumer*> *nConsumer) {
             image = wConsumer->at(i)->getImage();
             image->setPos(180, dy * (i + 1));
         }
-    ;
 }
+
+void GUI::sayHello() {
+    sleep(1);
+    scene->removeItem(enjoy);
+    hello=new QGraphicsPixmapItem();
+    hello->setPixmap(QPixmap("/home/li/CatCafe/img/Hello.png"));
+    hello->setPos(-5,0);
+    hello->setScale(1);
+    scene->addItem(hello);
+}
+
+void GUI::sayEnjoy(){
+    scene->removeItem(hello);
+    enjoy=new QGraphicsPixmapItem();
+    enjoy->setPixmap(QPixmap("/home/li/CatCafe/img/Enjoy.png"));
+    enjoy->setPos(-10,0);
+    enjoy->setScale(1);
+    scene->addItem(enjoy);
+}
+

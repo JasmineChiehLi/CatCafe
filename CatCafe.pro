@@ -52,4 +52,6 @@ DISTFILES += \
     img/Cat.png \
     img/Consumer.png \
     img/Employee.png \
-    img/效果图.png
+    img/效果图.png \
+    img/Enjoy.png \
+    img/Hello.png

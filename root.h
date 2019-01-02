@@ -17,8 +17,8 @@
 #define MAX_CON_NUM 128
 #define MAX_CAT_NUM 6
 
-#define MIN_CON_GAP 3
-#define CON_VAR 2
+#define MIN_CON_GAP 7
+#define CON_VAR 7
 
 class Root
         :public QObject

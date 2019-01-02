@@ -15,7 +15,7 @@
 
 
 #define SERVE_GAP 7
-#define SERVE_VAR 3
+#define SERVE_VAR 5
 
 class Employee
         : public QObject

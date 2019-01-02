@@ -24,6 +24,9 @@ Root::Root(GUI* gui, Employee* employee) {
     QObject::connect(this, SIGNAL(enQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(enQueue(Consumer*, QQueue<Consumer*>*)));
     QObject::connect(this, SIGNAL(deQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(deQueue(Consumer*, QQueue<Consumer*>*)));
     QObject::connect(employee, SIGNAL(freeEmp()), this, SLOT(consumerEmp()));
+    QObject::connect(employee, SIGNAL(hello()), gui, SLOT(sayHello()));
+    QObject::connect(employee, SIGNAL(enjoy()), gui, SLOT(sayEnjoy()));
+
 
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         cat[i] = new Cat();

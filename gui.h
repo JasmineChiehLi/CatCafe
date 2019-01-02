@@ -31,11 +31,18 @@ public slots:
 
     void work(Cat* cat);
     void home(Cat* cat);
+
+    void sayHello();
+    void sayEnjoy();
 private:
     QQueue<Consumer*> *wConsumer;
     QGraphicsScene* scene;
     QPixmap* pic[3];
     Root* root;
+
+    QGraphicsPixmapItem* emp;
+    QGraphicsPixmapItem* hello;
+    QGraphicsPixmapItem* enjoy;
 };
 
 #endif // GUI_H
