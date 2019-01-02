@@ -8,14 +8,14 @@
 
 #include <unistd.h>
 #include <semaphore.h>
-#include <sys.types.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 
 #include "consumer.h"
 
 
-#define SERVE_GAP 3
-#define SERVE_VAR 2
+#define SERVE_GAP 10
+#define SERVE_VAR 3
 
 class Employee
         : public QObject

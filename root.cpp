@@ -21,15 +21,16 @@ Root::Root(GUI* gui, Employee* employee) {
     this->gui = gui;
     this->employee = employee;
     QObject::connect(this, SIGNAL(removeConsumer(Consumer*)), gui, SLOT(removeConsumer(Consumer*)));
-    QObject::connect(this, SIGNAL(enQueue(Consumer*)), gui, SLOT(enQueue(Consumer*)));
+    QObject::connect(this, SIGNAL(enQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(enQueue(Consumer*, QQueue<Consumer*>*)));
+    QObject::connect(this, SIGNAL(deQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(deQueue(Consumer*, QQueue<Consumer*>*)));
 
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         cat[i] = new Cat();
 
         pthread_attr_init(&catAttr[i]);
 
-        QObject::connect(cat[i], SIGNAL(goToWork(Cat*)), gui, SLOT(work(Cat*)));
-        QObject::connect(cat[i], SIGNAL(goHome(Cat*)), gui, SLOT(home(Cat*)));
+        QObject::connect(cat[i], SIGNAL(work(Cat*)), gui, SLOT(work(Cat*)));
+        QObject::connect(cat[i], SIGNAL(home(Cat*)), gui, SLOT(home(Cat*)));
 
         freeCat->enqueue(cat[i]);
     }
@@ -73,6 +74,7 @@ void* Root::genConsumer() {
 }
 
 void Root::consumed(Consumer* consumer) {
+    emit deQueue(consumer, wConsumer);
     if(consumer->getHaveCafe()) {
         catConsumer(consumer);
     }
@@ -95,7 +97,6 @@ void Root::catConsumer(Consumer* consumer) {
     cat->setConsumer(consumer);
     cat->setIsFree(false);
     consumer->setCat(cat);
-
 }
 
 void* Root::consumerEmp() {
@@ -103,11 +104,13 @@ void* Root::consumerEmp() {
         sem_wait(&(employee->empSem));
         //when emplyee is available
 
-        if(!wConsumer->empty()) {
-            Consumer* consumer = wConsumer->dequeue();
-            employee->setConsumer(consumer);
-            consumer -> setBeingServed(true);
+        while(wConsumer->empty()) {
+            wait(nullptr);
         }
+
+        Consumer* consumer = wConsumer->dequeue();
+        employee->setConsumer(consumer);
+        consumer -> setBeingServed(true);
 
         sem_post(&(employee->empSem));
     }
@@ -138,6 +141,8 @@ void Root::catFree(Cat* cat) {
 
 void Root::queueCon(Consumer* consumer) {
     wConsumer->enqueue(consumer);
-    emit enQueue(consumer);
+    sleep(1);
+    qDebug() << "queueCon: " << wConsumer->size();
+    emit enQueue(consumer, wConsumer);
     qDebug() << "consumer " << consumer->getTid() <<"in queue"<<endl;
 }

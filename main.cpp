@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     Employee* employee = new Employee();
     Root* root = new Root(gui, employee);
 
-    gui->show();
+    //gui->show();
 
     pthread_t tidGenCon, tidEmp, tidMon;
     pthread_attr_t attrGenCon, attrEmp, attrMon;

@@ -8,6 +8,8 @@ Consumer::Consumer()
 
     srand(static_cast<unsigned int>(time(nullptr)));
     catTime = rand() % CAT_VAR + CAT_GAP;
+    image = new QGraphicsPixmapItem(QPixmap("/home/li/CatCafe/img/Consumer.png"));
+    image->setScale(0.85);
 }
 
 bool Consumer::getHaveCafe() {
@@ -41,8 +43,8 @@ void* Consumer::consume() {
             wait(nullptr);
         }
 
-        emit waitCat(this);
         emit wantCat(this);
+        emit waitCat(this);
         qDebug() << "Consumer "<< this->tid <<": I want a cat!" << endl;
 
 
@@ -65,4 +67,8 @@ void Consumer::setTid(pthread_t tid) {
 
 pthread_t Consumer::getTid() {
     return tid;
+}
+
+QGraphicsPixmapItem* Consumer::getImage() {
+    return image;
 }

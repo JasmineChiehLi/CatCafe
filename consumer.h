@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <QGraphicsPixmapItem>
 
 #include "cat.h"
 
@@ -30,6 +31,7 @@ public:
     void setTid(pthread_t tid);
     void setBeingServed(bool nowServed);
     pthread_t getTid();
+    QGraphicsPixmapItem* getImage();
 
     void* consume();
 
@@ -50,6 +52,7 @@ private:
     int catTime;
     Cat* cat;
     pthread_t tid;
+    QGraphicsPixmapItem* image;
 };
 
 #endif // CONSUMER_H

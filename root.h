@@ -17,7 +17,7 @@
 #define MAX_CON_NUM 128
 #define MAX_CAT_NUM 6
 
-#define MIN_CON_GAP 2
+#define MIN_CON_GAP 3
 #define CON_VAR 2
 
 class Root
@@ -50,8 +50,8 @@ signals:
     void removeConsumer(Consumer* consumer);
 
     //gui-concerned signals
-    void enQueue(Consumer* consumer);
-
+    void enQueue(Consumer* consumer, QQueue<Consumer*> *wConsumer);
+    void deQueue(Consumer* consumer, QQueue<Consumer*> *wConsumer);
 
 public slots:
     void consumed(Consumer* consumer);
