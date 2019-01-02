@@ -21,12 +21,13 @@ Root::Root(GUI* gui, Employee* employee) {
     this->gui = gui;
     this->employee = employee;
     QObject::connect(this, SIGNAL(removeConsumer(Consumer*)), gui, SLOT(removeConsumer(Consumer*)));
-    QObject::connect(this, SIGNAL(enQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(enQueue(Consumer*, QQueue<Consumer*>*)));
+    QObject::connect(this, SIGNAL(enQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(enQueue(Consumer*)));
     QObject::connect(this, SIGNAL(deQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(deQueue(Consumer*, QQueue<Consumer*>*)));
     QObject::connect(employee, SIGNAL(freeEmp()), this, SLOT(consumerEmp()));
     QObject::connect(employee, SIGNAL(hello()), gui, SLOT(sayHello()));
     QObject::connect(employee, SIGNAL(enjoy()), gui, SLOT(sayEnjoy()));
 
+    QObject::connect(this, SIGNAL(deCatQueue(Consumer*, Cat*)), gui, SLOT(deCatQueue(Consumer*, Cat*)));
 
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         cat[i] = new Cat();
@@ -61,8 +62,7 @@ void* Root::genConsumer() {
         QObject::connect(consumer[i], SIGNAL(wantCat(Consumer*)), this, SLOT(consumed(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(bye(Consumer*)), this, SLOT(cated(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(queueUp(Consumer*)), gui, SLOT(enQueue(Consumer*)));
-        QObject::connect(consumer[i], SIGNAL(waitCat(Consumer*)), gui, SLOT(waitCat(Consumer*)));
-        QObject::connect(consumer[i], SIGNAL(cating(Consumer*, Cat*)), gui, SLOT(cating(Consumer*, Cat*)));
+        QObject::connect(this, SIGNAL(deCatQueue(Consumer*, Cat*)), gui, SLOT(deCatQueue(Consumer*, Cat*)));
 
         pthread_attr_init(&conAttr[i]);
         pthread_create(&conTid[i], &conAttr[i], consumerThread, static_cast<void*>(consumer[i]));
@@ -98,13 +98,16 @@ void Root::cated(Consumer* consumer) {
 void Root::catConsumer(Consumer* consumer) {
     //distribute cat
     sem_wait(&cat_sem);
-    emit catSemChange();
+    //emit catSemChange();
 
     Cat* cat = freeCat->dequeue();
     cat->setIsFree(false);
     cat->setConsumer(consumer);
-    cat->setIsFree(false);
     consumer->setCat(cat);
+
+    qDebug() << "consumer: " << consumer->getTid() <<"cat: " << cat->getTid();
+    emit deCatQueue(consumer, cat);
+    //emit cating(consumer, cat);
 }
 
 void Root::consumerEmp() {

@@ -12,8 +12,8 @@
 
 #include "cat.h"
 
-#define CAT_GAP 10
-#define CAT_VAR 5
+#define CAT_GAP 3
+#define CAT_VAR 4
 
 
 //pre-declaration

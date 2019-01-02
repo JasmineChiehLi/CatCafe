@@ -14,8 +14,8 @@
 #include "consumer.h"
 
 
-#define SERVE_GAP 7
-#define SERVE_VAR 5
+#define SERVE_GAP 2
+#define SERVE_VAR 2
 
 class Employee
         : public QObject

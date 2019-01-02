@@ -17,8 +17,8 @@
 #define MAX_CON_NUM 128
 #define MAX_CAT_NUM 6
 
-#define MIN_CON_GAP 7
-#define CON_VAR 7
+#define MIN_CON_GAP 2
+#define CON_VAR 2
 
 class Root
         :public QObject
@@ -50,10 +50,12 @@ signals:
     //use see_getvalue() to update ui
     void removeConsumer(Consumer* consumer);
     void queueUp(Consumer* consumer);
-
+    void cating(Consumer* consumer, Cat* cat);
     //gui-concerned signals
     void enQueue(Consumer* consumer, QQueue<Consumer*> *wConsumer);
     void deQueue(Consumer* consumer, QQueue<Consumer*> *wConsumer);
+
+    void deCatQueue(Consumer* consumer, Cat* cat);
 
 public slots:
     void consumed(Consumer* consumer);
