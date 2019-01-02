@@ -57,7 +57,7 @@ void* Root::genConsumer() {
         consumer[i] = new Consumer();
         QObject::connect(consumer[i], SIGNAL(wantCat(Consumer*)), this, SLOT(consumed(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(bye(Consumer*)), this, SLOT(cated(Consumer*)));
-        QObject::connect(this, SIGNAL(queueUp(Consumer*)), gui, SLOT(enQueue(Consumer*)));
+        QObject::connect(consumer[i], SIGNAL(queueUp(Consumer*)), gui, SLOT(enQueue(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(waitCat(Consumer*)), gui, SLOT(waitCat(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(cating(Consumer*, Cat*)), gui, SLOT(cating(Consumer*, Cat*)));
 
@@ -70,8 +70,6 @@ void* Root::genConsumer() {
         wConsumer->enqueue(consumer[i]);
         sem_post(&sem_q);
 
-        emit queueUp(consumer[i]);
-        qDebug() << "consumer" << i << " in queue emitting";
         //Sleep
         unsigned int gap = rand() % CON_VAR + MIN_CON_GAP;
         sleep(gap);
@@ -147,3 +145,9 @@ void Root::catFree(Cat* cat) {
     emit catSemChange();
 }
 
+void Root::queueCon(Consumer* consumer) {
+      wConsumer->enqueue(consumer);
+      qDebug() << "queueCon: " << wConsumer->size();
+      emit enQueue(consumer, wConsumer);
+      qDebug() << "consumer " << consumer->getTid() <<"in queue"<<endl;
+}

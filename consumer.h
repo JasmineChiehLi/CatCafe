@@ -42,6 +42,8 @@ signals:
     void bye(Consumer* consumer);
     //delete
 
+    void queueUp(Consumer* consumer);
+
     //gui-concerned signals
     void waitCat(Consumer* consumer);
     void cating(Consumer* consumer, Cat* cat);

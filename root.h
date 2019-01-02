@@ -60,6 +60,7 @@ public slots:
     void catFree(Cat* cat);
     void cated(Consumer* consumer);
     void consumerEmp();
+    void queueCon(Consumer* consumer);
 
 private:
     GUI* gui;

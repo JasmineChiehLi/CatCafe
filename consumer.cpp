@@ -42,6 +42,8 @@ Cat* Consumer::getCat() {
 }
 
 void* Consumer::consume() {
+        queueUp(this);
+
         //emit queueUp(this);
         while(beingServed == false) {
             wait(nullptr);
