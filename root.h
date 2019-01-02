@@ -59,7 +59,6 @@ public slots:
     void consumed(Consumer* consumer);
     void catFree(Cat* cat);
     void cated(Consumer* consumer);
-    void queueCon(Consumer* consumer);
     void consumerEmp();
 
 private:

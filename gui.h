@@ -24,7 +24,7 @@ public:
 public slots:
     void removeConsumer(Consumer* consumer);
 
-    void enQueue(Consumer* consumer, QQueue<Consumer*> *wConsumer);
+    void enQueue(Consumer* consumer);
     void deQueue(Consumer* consumer, QQueue<Consumer*> *wConsumer);
     void waitCat(Consumer* consumer);
     void cating(Consumer* consumer, Cat* cat);
@@ -32,6 +32,7 @@ public slots:
     void work(Cat* cat);
     void home(Cat* cat);
 private:
+    QQueue<Consumer*> *wConsumer;
     QGraphicsScene* scene;
     QPixmap* pic[3];
     Root* root;
