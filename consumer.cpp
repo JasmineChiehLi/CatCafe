@@ -5,11 +5,20 @@ Consumer::Consumer()
     cat = nullptr;
     beingServed = false;
     haveCafe = false;
+    isRegistered = false;
 
     srand(static_cast<unsigned int>(time(nullptr)));
     catTime = rand() % CAT_VAR + CAT_GAP;
     image = new QGraphicsPixmapItem(QPixmap("/home/li/CatCafe/img/Consumer.png"));
     image->setScale(0.85);
+}
+
+void Consumer::setIsRegistered(bool registered) {
+    isRegistered = registered;
+}
+
+bool Consumer::getIsRegistered() {
+    return isRegistered;
 }
 
 bool Consumer::getHaveCafe() {
@@ -33,7 +42,7 @@ Cat* Consumer::getCat() {
 }
 
 void* Consumer::consume() {
-        queueUp(this);
+        //emit queueUp(this);
         while(beingServed == false) {
             wait(nullptr);
         }

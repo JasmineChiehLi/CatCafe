@@ -23,6 +23,7 @@ Root::Root(GUI* gui, Employee* employee) {
     QObject::connect(this, SIGNAL(removeConsumer(Consumer*)), gui, SLOT(removeConsumer(Consumer*)));
     QObject::connect(this, SIGNAL(enQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(enQueue(Consumer*, QQueue<Consumer*>*)));
     QObject::connect(this, SIGNAL(deQueue(Consumer*, QQueue<Consumer*>*)), gui, SLOT(deQueue(Consumer*, QQueue<Consumer*>*)));
+    QObject::connect(employee, SIGNAL(freeEmp()), this, SLOT(consumerEmp()));
 
     for(int i = 0; i < MAX_CAT_NUM; i++) {
         cat[i] = new Cat();
@@ -41,6 +42,7 @@ Root::Root(GUI* gui, Employee* employee) {
     }
 
     sem_init(&cat_sem, 0, MAX_CAT_NUM);
+    sem_init(&sem_q, 1, 1);
 }
 
 Root::~Root() {
@@ -55,7 +57,7 @@ void* Root::genConsumer() {
         consumer[i] = new Consumer();
         QObject::connect(consumer[i], SIGNAL(wantCat(Consumer*)), this, SLOT(consumed(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(bye(Consumer*)), this, SLOT(cated(Consumer*)));
-        QObject::connect(consumer[i], SIGNAL(queueUp(Consumer*)), this, SLOT(queueCon(Consumer*)));
+        QObject::connect(this, SIGNAL(queueUp(Consumer*)), this, SLOT(queueCon(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(waitCat(Consumer*)), gui, SLOT(waitCat(Consumer*)));
         QObject::connect(consumer[i], SIGNAL(cating(Consumer*, Cat*)), gui, SLOT(cating(Consumer*, Cat*)));
 
@@ -63,8 +65,13 @@ void* Root::genConsumer() {
         pthread_create(&conTid[i], &conAttr[i], consumerThread, static_cast<void*>(consumer[i]));
 
         consumer[i]->setTid(static_cast<pthread_t>(i));
-        emit newConsumer();
 
+        sem_wait(&sem_q);
+        wConsumer->enqueue(consumer[i]);
+        sem_post(&sem_q);
+
+        emit queueUp(consumer[i]);
+        qDebug() << "consumer" << i << " in queue";
         //Sleep
         unsigned int gap = rand() % CON_VAR + MIN_CON_GAP;
         sleep(gap);
@@ -99,21 +106,22 @@ void Root::catConsumer(Consumer* consumer) {
     consumer->setCat(cat);
 }
 
-void* Root::consumerEmp() {
-    while(true) {
-        sem_wait(&(employee->empSem));
+void Root::consumerEmp() {
         //when emplyee is available
 
         while(wConsumer->empty()) {
             wait(nullptr);
         }
 
+        sem_wait(&sem_q);
         Consumer* consumer = wConsumer->dequeue();
+        qDebug() << "dequeueing";
+        sem_post(&sem_q);
+
+        sem_wait(&(employee->empSem));
         employee->setConsumer(consumer);
         consumer -> setBeingServed(true);
-
         sem_post(&(employee->empSem));
-    }
 }
 
 void* Root::consumerThread(void* param) {
@@ -128,9 +136,9 @@ void* Root::catThread(void* param) {
     return static_cast<Cat*>(param)->Mew();
 }
 
-void* Root::monitor(void* param) {
-    return static_cast<Root*>(param)->consumerEmp();
-}
+//void* Root::monitor(void* param) {
+//    return static_cast<Root*>(param)->consumerEmp();
+//}
 
 void Root::catFree(Cat* cat) {
     cat->setConsumer(nullptr);
@@ -140,9 +148,6 @@ void Root::catFree(Cat* cat) {
 }
 
 void Root::queueCon(Consumer* consumer) {
-    wConsumer->enqueue(consumer);
-    sleep(1);
     qDebug() << "queueCon: " << wConsumer->size();
     emit enQueue(consumer, wConsumer);
-    qDebug() << "consumer " << consumer->getTid() <<"in queue"<<endl;
 }

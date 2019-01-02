@@ -11,12 +11,15 @@
 
 #include "employee.h"
 
+class Root;
+
 class GUI
         :public QGraphicsView
 {
     Q_OBJECT
 public:
     GUI();
+    void setRoot(Root* root);
 
 public slots:
     void removeConsumer(Consumer* consumer);
@@ -31,6 +34,7 @@ public slots:
 private:
     QGraphicsScene* scene;
     QPixmap* pic[3];
+    Root* root;
 };
 
 #endif // GUI_H

@@ -31,12 +31,12 @@ void* Employee::serve(){
     genServeTime();
     qDebug()<<"employee begins to work";
     while(true){
+        emit freeEmp();
         while(consumer == nullptr) {
             wait(nullptr);
         }
         sem_wait(&empSem);
         i++;
-//        qDebug()<<"consumer "<<i<<" coming";
         emit hello();
 
         serveTime = rand() % SERVE_VAR + SERVE_GAP;

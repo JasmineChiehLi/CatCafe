@@ -12,7 +12,7 @@
 
 #include "cat.h"
 
-#define CAT_GAP 7
+#define CAT_GAP 10
 #define CAT_VAR 5
 
 
@@ -30,14 +30,14 @@ public:
     void setCat(Cat* cat);
     void setTid(pthread_t tid);
     void setBeingServed(bool nowServed);
+    void setIsRegistered(bool registered);
+    bool getIsRegistered();
     pthread_t getTid();
     QGraphicsPixmapItem* getImage();
 
     void* consume();
 
 signals:
-    void queueUp(Consumer* consumer);
-    //加入排队买咖啡
     void wantCat(Consumer* consumer);
     void bye(Consumer* consumer);
     //delete
@@ -49,6 +49,7 @@ signals:
 private:
     bool haveCafe;
     bool beingServed;
+    bool isRegistered;
     int catTime;
     Cat* cat;
     pthread_t tid;

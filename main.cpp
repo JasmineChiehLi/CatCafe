@@ -10,10 +10,11 @@ int main(int argc, char *argv[])
     Employee* employee = new Employee();
     Root* root = new Root(gui, employee);
 
-    //gui->show();
+    gui->setRoot(root);
+    gui->show();
 
-    pthread_t tidGenCon, tidEmp, tidMon;
-    pthread_attr_t attrGenCon, attrEmp, attrMon;
+    pthread_t tidGenCon, tidEmp;
+    pthread_attr_t attrGenCon, attrEmp;
 
     pthread_attr_init(&attrEmp);
     pthread_create(&tidEmp, &attrEmp, employee->run, employee);
@@ -21,8 +22,8 @@ int main(int argc, char *argv[])
     pthread_attr_init(&attrGenCon);
     pthread_create(&tidGenCon, &attrGenCon, root->consumerGenThread, root);
 
-    pthread_attr_init(&attrMon);
-    pthread_create(&tidMon, &attrMon, root->monitor, root);
+//    pthread_attr_init(&attrMon);
+//    pthread_create(&tidMon, &attrMon, root->monitor, root);
 
     return a.exec();
 }

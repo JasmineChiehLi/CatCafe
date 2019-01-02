@@ -33,21 +33,23 @@ public:
     static void* consumerThread(void* param);
     static void* catThread(void* param);
     static void* consumerGenThread(void* param);
-    static void* monitor(void* param);
+  //  static void* monitor(void* param);
 
     void catConsumer(Consumer* consumer);
     //distribute cat - operation function
-    void* consumerEmp();
+   // void* consumerEmp();
     //keep record of whether the employee is available
     //and whether there are waiting consumers
 
     void* run();
 
+    sem_t sem_q;
+
 signals:
-    void newConsumer();
     void catSemChange();
     //use see_getvalue() to update ui
     void removeConsumer(Consumer* consumer);
+    void queueUp(Consumer* consumer);
 
     //gui-concerned signals
     void enQueue(Consumer* consumer, QQueue<Consumer*> *wConsumer);
@@ -58,7 +60,7 @@ public slots:
     void catFree(Cat* cat);
     void cated(Consumer* consumer);
     void queueCon(Consumer* consumer);
-
+    void consumerEmp();
 
 private:
     GUI* gui;

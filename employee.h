@@ -14,7 +14,7 @@
 #include "consumer.h"
 
 
-#define SERVE_GAP 10
+#define SERVE_GAP 7
 #define SERVE_VAR 3
 
 class Employee
@@ -34,6 +34,9 @@ public:
     void *serve();//線程函數
     static void* run(void* param);
 signals:
+    void freeEmp();
+
+    //gui-concernd signals
     void hello();
     void enjoy();
 
